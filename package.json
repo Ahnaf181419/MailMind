@@ -1,0 +1,31 @@
+{
+  "name": "mailmind",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MailMind — Faculty Inbox Co-Pilot. AI-augmented Gmail dashboard built for university faculty.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,green \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "npm --workspace apps/api run dev",
+    "dev:web": "npm --workspace apps/web run dev",
+    "build": "npm --workspace packages/shared run build && npm --workspace apps/api run build && npm --workspace apps/web run build",
+    "start": "npm --workspace apps/api run start",
+    "seed:force": "npm --workspace apps/api run seed:force",
+    "test": "npm --workspace apps/api test && npm --workspace apps/web test",
+    "lint": "npm --workspace apps/api run lint && npm --workspace apps/web run lint"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "concurrently": "^9.0.1",
+    "typescript": "^5.6.3"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "mongodb": "^6.21.0"
+  }
+}
