@@ -17,17 +17,22 @@ export default function LoginPage() {
   async function handleSignIn() {
     setLoading(true);
     try {
-      const res = await api.post<{ user: { id: string; email: string; name: string } }>(
+      const res = await api.post<{ user?: { id: string }; token?: string }>(
         '/api/auth/sign-in/email',
         { email, password },
       );
-      if (!res.success) {
-        showToast(res.error.message ?? 'Sign-in failed', 'error');
+      const authOk =
+        res.success === true ||
+        (res as { user?: unknown }).user != null ||
+        (res as { token?: unknown }).token != null;
+      if (!authOk) {
+        const resErr = res as { error?: { message?: string } };
+        showToast(resErr.error?.message ?? 'Sign-in failed', 'error');
         setLoading(false);
         return;
       }
       router.push('/dashboard');
-    } catch (err) {
+    } catch {
       showToast('Sign-in error', 'error');
       setLoading(false);
     }
@@ -36,19 +41,23 @@ export default function LoginPage() {
   async function handleDemoMode() {
     setLoading(true);
     try {
-      const res = await api.post<{ user: { id: string; email: string; name: string } }>(
+      const res = await api.post<{ user?: { id: string }; token?: string }>(
         '/api/auth/sign-in/email',
         { email: 'demo@aust.edu', password: 'demo1234' },
       );
-      if (!res.success) {
-        showToast(res.error.message ?? 'Demo sign-in failed', 'error');
+      const authOk =
+        res.success === true ||
+        (res as { user?: unknown }).user != null ||
+        (res as { token?: unknown }).token != null;
+      if (!authOk) {
+        const resErr = res as { error?: { message?: string } };
+        showToast(resErr.error?.message ?? 'Demo sign-in failed', 'error');
         setLoading(false);
         return;
       }
-      // Trigger sync to ensure demo data exists
       await api.post('/api/sync/mock', { reset: false });
       router.push('/dashboard');
-    } catch (err) {
+    } catch {
       showToast('Demo sign-in error', 'error');
       setLoading(false);
     }
